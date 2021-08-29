@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:dev": "nodemon --config nodemon.json",
+    "start": "node -r module-alias/register ./dist",
+    "build": "tsc --build ./tsconfig.prod.json"
   },
   "repository": {
     "type": "git",
@@ -15,5 +17,20 @@
   "bugs": {
     "url": "https://github.com/grallc/moonboyz-discord/issues"
   },
-  "homepage": "https://github.com/grallc/moonboyz-discord#readme"
+  "homepage": "https://github.com/grallc/moonboyz-discord#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.9.0",
+    "@typescript-eslint/parser": "^4.9.0",
+    "eslint": "^7.15.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1"
+  },
+  "dependencies": {
+    "discord.js": "^13.1.0",
+    "dotenv": "10.0.0",
+    "nodemon": "^2.0.12",
+    "ts-node": "^10.2.1"
+  }
 }
