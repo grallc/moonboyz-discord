@@ -28,15 +28,20 @@ const formatByUsers = (invites: Invite[]) => {
   const usersInvites = new Map<string, number>()
   invites.forEach(invite => {
     if (invite.inviter === null) return
+    console.log(invite)
     usersInvites.set(invite.inviter.id, (usersInvites.get(invite.inviter.id) || 0) + (invite.uses || 0))
   })
   return usersInvites
 }
 
 const filterUsers = (usersInvites: Map<string, number>): string[] => {
+  const requiredInvits = process.env.REQUIRED_INVITS
+  if (!requiredInvits) {
+    throw new Error('Missing the REQUIRED_INVITS env variable!')
+  }
   for (let user of usersInvites.keys()) {
     const userInvites = usersInvites.get(user)
-    if (!userInvites || userInvites < 5){
+    if (!userInvites || userInvites < parseInt(requiredInvits)){
       usersInvites.delete(user)
     }
   }
