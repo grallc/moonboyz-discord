@@ -28,7 +28,6 @@ const formatByUsers = (invites: Invite[]) => {
   const usersInvites = new Map<string, number>()
   invites.forEach(invite => {
     if (invite.inviter === null) return
-    console.log(invite)
     usersInvites.set(invite.inviter.id, (usersInvites.get(invite.inviter.id) || 0) + (invite.uses || 0))
   })
   return usersInvites
