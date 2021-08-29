@@ -1,11 +1,12 @@
 require('dotenv').config()
-import { Client, Guild, Intents, Invite, OAuth2Guild } from 'discord.js'
+import { Client, Guild, Intents, Invite } from 'discord.js'
+import cron from 'node-cron'
 
 
 const serverId = process.env.MAIN_SERVER_ID
 
 if (!serverId) {
-  throw new Error('Missing the main server ID env variable!')
+  throw new Error('Missing the MAIN_SERVER_ID env variable!')
 }
 
 const getGuild = async (bot: Client): Promise<Guild> => {
@@ -27,7 +28,7 @@ const formatByUsers = (invites: Invite[]) => {
   const usersInvites = new Map<string, number>()
   invites.forEach(invite => {
     if (invite.inviter === null) return
-    usersInvites.set(invite.inviter.id, (usersInvites.get(invite.inviter.id) || 0) + (invite.uses || 0) + 5)
+    usersInvites.set(invite.inviter.id, (usersInvites.get(invite.inviter.id) || 0) + (invite.uses || 0))
   })
   return usersInvites
 }
@@ -45,13 +46,33 @@ const filterUsers = (usersInvites: Map<string, number>): string[] => {
 const upgradeUsers = async (guild: Guild, users: string[]) => {
   const roleId = process.env.UPGRADE_ROLE
   if (!roleId) {
-    throw new Error('Missing the role ID env variable!')
+    throw new Error('Missing the UPGRADE_ROLE env variable!')
   }
-  
+
   users.forEach(async userId => {
     const user = await guild.members.fetch(userId) 
     if (!user || user.roles.cache.get(roleId)) return
     await user.roles.add(roleId)
+    console.log(`Successfully upgraded ${user.user.username}#${user.user.discriminator}.`)
+  })
+}
+
+const runCheck = async (guild: Guild) => {
+  console.log('Checking upgradeable users...')
+  const invites = await getServerInvites(guild)
+  const formattedInvites = formatByUsers(invites)
+  const upgradableUsers = filterUsers(formattedInvites)
+  await upgradeUsers(guild, upgradableUsers)
+} 
+
+const initCron = (guild: Guild) => {
+  const cronInterval = process.env.CRON_INTERVAL
+  if (!cronInterval) {
+    throw new Error('Missing the CRON_INTERVAL env variable!')
+  }
+  runCheck(guild)
+  cron.schedule(cronInterval, async () => {
+    runCheck(guild)
   })
 }
 
@@ -59,8 +80,5 @@ const upgradeUsers = async (guild: Guild, users: string[]) => {
   const bot = new Client({ intents: [Intents.FLAGS.GUILDS] });
   await bot.login(process.env.BOT_TOKEN as string);
   const guild = await getGuild(bot)
-  const invites = await getServerInvites(guild)
-  const formattedInvites = formatByUsers(invites)
-  const upgradableUsers = filterUsers(formattedInvites)
-  await upgradeUsers(guild, upgradableUsers)
+  initCron(guild)
 })();

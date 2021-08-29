@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/grallc/moonboyz-discord#readme",
   "devDependencies": {
+    "@types/node-cron": "^2.0.4",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
     "@typescript-eslint/parser": "^4.9.0",
     "eslint": "^7.15.0",
@@ -30,6 +31,7 @@
   "dependencies": {
     "discord.js": "^13.1.0",
     "dotenv": "10.0.0",
+    "node-cron": "^3.0.0",
     "nodemon": "^2.0.12",
     "ts-node": "^10.2.1"
   }
