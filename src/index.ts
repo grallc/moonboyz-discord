@@ -65,7 +65,7 @@ const formatByUsers = (invites: Invite[]) => {
   const usersInvites = new Map<string, number>()
   invites.forEach(invite => {
     if (invite.inviter === null) return
-    usersInvites.set(invite.inviter.id, (usersInvites.get(invite.inviter.id) || 0) + (invite.uses || 0) + 50)
+    usersInvites.set(invite.inviter.id, (usersInvites.get(invite.inviter.id) || 0) + (invite.uses || 0))
   })
   return usersInvites
 }
